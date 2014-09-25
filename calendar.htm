@@ -1,0 +1,320 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0042)http://suiyidian.cn/texiao/rili/index.html -->
+<html  xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<!-- <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script> -->
+<script src="zepto.js"></script>
+<title>无标题文档</title>
+</head>
+
+<body>
+<div  class="rili">
+<div  class="time_y_m_d"  style="width: 100%; height: 35px; overflow: hidden; position:relative">
+<div  class="time_date">2014年/9</div>
+<div  class="m_down">下一月</div>
+<div  class="m_up">上一月</div>
+</div>
+<ul  class="rili_h"><li>周日</li><li>周一</li><li>周二</li><li>周三</li><li>周四</li><li>周五</li><li>周六</li></ul>
+<ul  class="rili_z"></ul>
+</div>
+<style>
+.time_y_m_d div.time_date {
+  height: 35px;
+  line-height: 35px;
+  margin: 0 auto;
+  text-align: center;
+  /*width: 61px;*/
+}
+.time_y_m_d{ font-size:12px; background:#FFF}
+.time_y_m_d div{ height:35px; line-height:35px; text-align:center;/*width: 61px;*/ top:0px; cursor:pointer;font-size:28px;}
+.time_date{color:#5ea626; font-size:28px;}
+.m_down{ position:absolute; right:0px}
+.m_up{ position:absolute; left:0px}
+.time_y_m_d{ border-left:1px solid #ccc;border-top:1px solid #ccc;}
+.rili_h{border-bottom:2px solid #5ea626; overflow: hidden;background:#fff;}
+.rili .rili_h li{ background:#fff;}
+.rili li{list-style:none; float:left; min-height:49px; text-align:center; line-height:49px; font-size:14px; font-weight: bold;}
+.rili_z li{color: #ccc; border-left:1px solid #e8e8e8; border-top:1px solid #e8e8e8;}
+.rili{ width:100%; height:auto; overflow:hidden; border-right:1px solid #ccc;border-bottom:1px solid #ccc;}
+.rili *,.rili{ padding:0px;margin:0}
+.rili{ margin:0px auto; background:#f1f1f1}
+.rili_z li.section{background: #fff;color: #3d3d3d;cursor:pointer;}
+.rili_z li.mark{background-image:url(mark.png);
+background-repeat:no-repeat;
+background-position:right bottom;}
+.rili_z li.current{background-color:#f96;}
+.rili_z li.active{background-color:#5ea626; color:#fff;}
+</style>
+
+<script type="text/javascript">
+//日期区间及标记日配置
+var days ={
+	//起始时间
+	start:{
+		y:2014,
+		m:9,
+		d:10
+	},
+	//结束时间
+	end:{
+		y:2014,
+		m:11,
+		d:10
+	},
+	//间隔天数
+	period:60,
+	//标记日
+	markDay:[
+		{
+			y:2014,
+			m:10,
+			d:25
+		},
+		{
+			y:2014,
+			m:9,
+			d:28
+		},		
+	],
+	//用户选择日期
+	getSelect:[]	
+};
+//设置开始天数
+(function(date){
+	days.period--;
+	days.start.y = date.getFullYear();
+	days.start.m = date.getMonth()+1;
+	days.start.d = date.getDate();
+	//本月
+	var thisDate = new Date(days.start.y,days.start.m,0)	
+	//下月
+	var nextDate = days.start.m!=12?new Date(days.start.y,days.start.m+1,0):new Date(days.start.y+1,1,0)
+	// console.log(nextDate.getDate())
+	// console.log(thisDate.getDate())
+	//如果开始天数+间隔天数大于本月最大日期
+	if(days.period+days.start.d>thisDate.getDate()){
+		//如果间隔天数减去本月剩余天数小于下月最小天数
+		if(days.period-(thisDate.getDate()-days.start.d)<nextDate.getDate()){
+			days.end.y =  nextDate.getFullYear();
+			days.end.m =  nextDate.getMonth()+1;
+			days.end.d =  days.period-(thisDate.getDate()-days.start.d);
+			// console.log(days.end)
+		}else{
+			days.end.y =  nextDate.getFullYear();
+			days.end.m =  nextDate.getMonth()+2;
+			days.end.d =  days.period-(thisDate.getDate()-days.start.d)-nextDate.getDate();
+			// console.log(days.end)
+		}
+	}else{ //不跨月
+		days.end.y =  days.start.y;
+		days.end.m =  days.start.m;
+		days.end.d =  days.start.d+days.period;
+		// console.log(days.end)		
+	}
+})(new Date());
+//根据间隔天数计算结束日期
+
+//时间区间	
+function longDate(year,month){
+	//起始、结束垮年垮月时
+	if(days.start.y<days.end.y||days.start.m!=days.end.m&&days.start.y==year){
+		//开始月
+		if(days.start.m==month&&days.end.m!=month){
+			$(".rili_z li").each(function(i,vli){
+				// console.log(calendar.getDates(month-1))
+				if(vli.innerHTML>=days.start.d&&vli.innerHTML<=calendar.getDates(month-1)){
+					$(vli).addClass("section");
+				}
+			})	
+		}
+		//结束月
+		if(days.end.m==month&&days.start.m!=month){
+			$(".rili_z li").each(function(i,vli){
+				// console.log(calendar.getDates(month-1))
+				if(vli.innerHTML<=days.end.d&&vli.innerHTML>=1){
+					$(vli).addClass("section");
+				}
+			})	
+		}		 
+		//跨度月
+		if(Math.abs(days.start.m-days.end.m)!=1&&Math.abs(days.start.m-days.end.m)!=11&&((days.start.m+1)==month||(days.end.m-1)==month)){
+			$(".rili_z li").each(function(i,vli){
+				// console.log(calendar.getDates(month-1))
+				if(vli.innerHTML<=new Date(year,month,0).getDate()&&vli.innerHTML>=1){
+					$(vli).addClass("section");
+				}
+			})	
+		}			
+	}else{
+		if(days.start.m==month&&days.end.m==month){
+			$(".rili_z li").each(function(i,vli){
+				// console.log(calendar.getDates(month-1))
+				if(vli.innerHTML<=days.end.d&&vli.innerHTML>=days.start.d){
+					$(vli).addClass("section");
+				}
+			})
+		}
+	}	
+};
+//特定日期标记
+function markDate(year,month){
+	$.each(days.markDay,function(index,v){
+		if(v.y==year){
+			if(v.m==month){
+				$(".rili_z li").each(function(i,vli){
+					if(v.d==vli.innerHTML){
+						$(vli).addClass("mark");
+					}
+				})	
+			}
+		}
+	})
+};
+
+var calendar={
+	nowMonth:null,
+	nowYear:null,
+	nowDate:null,
+	getDates:function(M){//获取当前月有多少天
+		var D=new Date();
+		D.setMonth(M+1); 
+		D.setDate(0); 
+		return D.getDate()
+	},
+	getMonthOne:function(M){//获取当前月第一天是星期几
+		var D=new Date();
+		var D2=new Date(D.getFullYear(),M,1)
+		return D2.getDay()
+	},
+	nowDate:function(){
+		var D=new Date();
+		calendar.nowMonth=D.getMonth();
+		calendar.nowYear=D.getFullYear();
+		calendar.nowDate=D.getDate();		
+		$(".time_date").html('<span class"y">'+calendar.nowYear+'</span>'+'年 <span class="m">'+(calendar.nowMonth+1)+'</span>月');
+	},
+	downM:function(){
+		if(calendar.nowMonth>=11){
+			//最后一月
+			calendar.nowMonth=0
+			calendar.nowYear++;
+		}else{
+			calendar.nowMonth+=1;
+		}
+		$(".time_date").html('<span class"y">'+calendar.nowYear+'</span>'+'年 <span class="m">'+(calendar.nowMonth+1)+'</span>月');
+		calendar.initHtml();	
+	},
+	upM:function(){
+		if(calendar.nowMonth<1){
+			//第一月
+			calendar.nowMonth=11
+			calendar.nowYear--;
+		}else{
+			calendar.nowMonth-=1;
+		}
+		$(".time_date").html('<span class"y">'+calendar.nowYear+'</span>'+'年 <span class="m">'+(calendar.nowMonth+1)+'</span>月');
+		calendar.initHtml();
+	},
+	initHtml:function(){
+		//当前时间
+		var Da=new Date();
+		var dates=calendar.getDates(calendar.nowMonth)
+		var day=calendar.getMonthOne(calendar.nowMonth)
+		var zHtml="";
+		var d=0;
+		if(day!=0){
+				for(p=0; p<day; p++){
+				zHtml+="<li></li>"	
+					
+				}
+		}
+		for(i=0; i<dates; i++)
+		{
+			//本月
+			if(Da.getMonth()==calendar.nowMonth){
+				//今天
+				if(Da.getDate()==(i+1)&&days.start.y==calendar.nowYear){
+					zHtml+="<li class='current'>"+(i+1)+"</li>";
+				}else{
+						zHtml+="<li>"+(i+1)+"</li>";
+				}
+			}else{				
+					zHtml+="<li>"+(i+1)+"</li>";
+			}			
+				
+		}
+		$(".rili_z").html(zHtml)
+		var dL=$(".rili_z li").length;
+		var zLeng=42
+		if(dL!=zLeng){
+			for(k=0; k<(zLeng-dL); k++){
+				$(".rili_z").append("<li></li>")		
+			}	
+		}
+		markDate(calendar.nowYear,calendar.nowMonth+1);
+		longDate(calendar.nowYear,calendar.nowMonth+1);
+		var mouthDown =1+ parseInt($(".m").text());
+		if(mouthDown>12){
+			mouthDown = 1;
+		}	
+		$(".m_down").text(mouthDown+" 月");		
+		var mouthUp = parseInt($(".m").text())-1;
+		if(parseInt($(".m").text())==1){
+			mouthUp =12;
+		}
+		$(".m_up").text(mouthUp+" 月");	
+	}	
+	}
+calendar.nowDate()	
+calendar.initHtml()	
+$(".m_down").click(function(){ calendar.downM();layout();})
+$(".m_up").click(function(){ calendar.upM();layout();})
+//点击可选日期
+$(document).on("click",".section",function(){
+	if($(this).hasClass("active")){
+		$(this).removeClass("active");
+	}else{
+		$(this).addClass("active");
+	}
+	var y = calendar.nowYear;
+	var m = calendar.nowMonth;
+	var thisDay = y+"-"+m+"-"+$(this).text();
+	if(days.getSelect.length){
+		for(var i=0;i<days.getSelect.length;i++){
+			if(days.getSelect[i]==thisDay){
+				days.getSelect.splice(i,1);
+				return;
+			}
+		}
+		days.getSelect.push(thisDay);
+	}else{
+		days.getSelect.push(thisDay);
+	}
+	console.log(days.getSelect)
+});
+//计算li宽度
+function layout(){
+	var liWidth = $(".rili").width()/7;
+	$(".rili_h li").css("width",liWidth-1);
+	$(".rili_z li").css("width",liWidth-2);
+	if(!$(".rili_z li:nth-last-child(7)")[0].innerHTML){
+		for(var i=0;i<7;i++){
+			$(".rili_z li").eq(-i).hide();
+		}
+	};
+}
+layout();
+function throttle(method,context){
+	clearTimeout(method.tId);
+	method.tId = setTimeout(function(){
+		method.call(context);
+	},100)
+}
+window.onresize = function(){
+	throttle(layout);
+};
+</script>
+
+
+
+</body></html>
