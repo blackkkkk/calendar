@@ -309,17 +309,16 @@ $(document).on("click",".section",function(){
 //计算li宽度
 function layout(){
 	var liWidth = $(".rili").width()/7;
-	$(".rili_h li").css("width",liWidth-1);
-	$(".rili_z li").css("width",liWidth-2);
+	$(".rili_h li").css("width",Math.ceil(liWidth-1));
+	$(".rili_z li").css("width",Math.floor(liWidth-1));
 	if(!$(".rili_z li:nth-last-child(7)")[0].innerHTML){
 		for(var i=0;i<7;i++){
 			$(".rili_z li").eq(-i).hide();
 		}
 	};
 	$(".rili_z li").each(function(i,v){
-		console.log(i%7)
 		if(i%7==0){
-			$(v).css("float","right").width($(".rili").width()-(liWidth)*6);
+			$(v).width($(".rili").width()-Math.floor(liWidth)*6-2);
 		}
 	});
 }
