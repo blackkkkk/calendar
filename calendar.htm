@@ -77,7 +77,7 @@ var days ={
 		},		
 	],
 	//用户选择日期
-	getSelect:[]	
+	getSelect:null
 };
 //设置开始天数
 (function(date){
@@ -270,26 +270,40 @@ calendar.initHtml()
 $(".m_down").click(function(){ calendar.downM();layout();})
 $(".m_up").click(function(){ calendar.upM();layout();})
 //点击可选日期
+//多选
+// $(document).on("click",".section",function(){
+	// if($(this).hasClass("active")){
+		// $(this).removeClass("active");
+	// }else{
+		// $(this).addClass("active");
+	// }
+	// var y = calendar.nowYear;
+	// var m = calendar.nowMonth;
+	// var thisDay = y+"-"+m+"-"+$(this).text();
+	// if(days.getSelect.length){
+		// for(var i=0;i<days.getSelect.length;i++){
+			// if(days.getSelect[i]==thisDay){
+				// days.getSelect.splice(i,1);
+				// return;
+			// }
+		// }
+		// days.getSelect.push(thisDay);
+	// }else{
+		// days.getSelect.push(thisDay);
+	// }
+	// console.log(days.getSelect)
+// });
+//单选
 $(document).on("click",".section",function(){
 	if($(this).hasClass("active")){
 		$(this).removeClass("active");
 	}else{
-		$(this).addClass("active");
+		$(this).addClass("active").siblings().removeClass("active");
 	}
 	var y = calendar.nowYear;
 	var m = calendar.nowMonth;
 	var thisDay = y+"-"+m+"-"+$(this).text();
-	if(days.getSelect.length){
-		for(var i=0;i<days.getSelect.length;i++){
-			if(days.getSelect[i]==thisDay){
-				days.getSelect.splice(i,1);
-				return;
-			}
-		}
-		days.getSelect.push(thisDay);
-	}else{
-		days.getSelect.push(thisDay);
-	}
+	days.getSelect = thisDay;
 	console.log(days.getSelect)
 });
 //计算li宽度
@@ -302,6 +316,12 @@ function layout(){
 			$(".rili_z li").eq(-i).hide();
 		}
 	};
+	$(".rili_z li").each(function(i,v){
+		console.log(i%7)
+		if(i%7==0){
+			$(v).css("float","right").width($(".rili").width()-(liWidth)*6);
+		}
+	});
 }
 layout();
 function throttle(method,context){
